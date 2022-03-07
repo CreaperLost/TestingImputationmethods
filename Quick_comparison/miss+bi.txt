@@ -1,0 +1,13 @@
+Error for realdata\colleges_aaup.csv : 0.974210641444096  Time : 0:03:21.945813
+Error for realdata\colleges_usnews.csv : 0.7493345310280695  Time : 0:13:49.134305
+Error for realdata\echoMonths.csv : 0.4557939619479533  Time : 0:02:42.402203
+Error for realdata\fishcatch.csv : 0.9404914735246376  Time : 0:01:03.888589
+Error for realdata\heart-h.csv : 0.7633161803796479  Time : 0:03:07.046587
+Error for realdata\hungarian.csv : 0.7869910909523913  Time : 0:03:26.799941
+Error for realdata\kdd_el_nino-small.csv : 0.9424210528966895  Time : 0:01:58.636179
+Error for realdata\meta.csv : -9.197331742894406  Time : 0:00:19.180748
+Error for realdata\Moneyball.csv : 0.9252945311993848  Time : 0:00:31.957010
+Error for realdata\NewFuelCar.csv : 0.9986545525851463  Time : 0:03:52.278695
+Error for realdata\pbcseq2.csv : 0.8188459544100815  Time : 0:03:41.882364
+Error for realdata\schizo.csv : 0.6801230432364334  Time : 0:01:39.337724
+Error for realdata\water-treatment.csv : 0.7477092074380858  Time : 0:11:48.719332
