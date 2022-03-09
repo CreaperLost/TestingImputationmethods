@@ -25,6 +25,7 @@
 '''
  
 # Necessary packages
+from re import I
 import numpy as np
 # Necessary packages
 import tensorflow as tf
@@ -34,7 +35,7 @@ import tensorflow as tf
 tf.compat.v1.disable_v2_behavior()
 
 
-def normalization (data, parameters=None):
+def normalization (data, parameters,catidx):
   '''Normalize data in [0, 1] range.
   
   Args:
@@ -52,14 +53,15 @@ def normalization (data, parameters=None):
   if parameters is None:
   
     # MixMax normalization
-    min_val = np.zeros(dim)
-    max_val = np.zeros(dim)
+    min_val = np.zeros(len(catidx))
+    max_val = np.zeros(len(catidx))
     
-    # For each dimension
-    for i in range(dim):
-      min_val[i] = np.nanmin(norm_data[:,i])
+    # For each dim(ension
+    for j in range(0,len(catidx)):
+      i=catidx[j]
+      min_val[j] = np.nanmin(norm_data[:,i])
       norm_data[:,i] = norm_data[:,i] - np.nanmin(norm_data[:,i])
-      max_val[i] = np.nanmax(norm_data[:,i])
+      max_val[j] = np.nanmax(norm_data[:,i])
       norm_data[:,i] = norm_data[:,i] / (np.nanmax(norm_data[:,i]) + 1e-6)   
       
     # Return norm_parameters for renormalization
@@ -70,17 +72,17 @@ def normalization (data, parameters=None):
     min_val = parameters['min_val']
     max_val = parameters['max_val']
     
-    # For each dimension
-    for i in range(dim):
-      norm_data[:,i] = norm_data[:,i] - min_val[i]
-      norm_data[:,i] = norm_data[:,i] / (max_val[i] + 1e-6)  
+    for j in range(0,len(catidx)):
+      i=catidx[j]
+      norm_data[:,i] = norm_data[:,i] - min_val[j]
+      norm_data[:,i] = norm_data[:,i] / (max_val[j] + 1e-6)  
       
     norm_parameters = parameters    
       
   return norm_data, norm_parameters
 
 
-def renormalization (norm_data, norm_parameters):
+def renormalization (norm_data, norm_parameters,catidx):
   '''Renormalize data from [0, 1] range to the original range.
   
   Args:
@@ -97,9 +99,10 @@ def renormalization (norm_data, norm_parameters):
   _, dim = norm_data.shape
   renorm_data = norm_data.copy()
     
-  for i in range(dim):
-    renorm_data[:,i] = renorm_data[:,i] * (max_val[i] + 1e-6)   
-    renorm_data[:,i] = renorm_data[:,i] + min_val[i]
+  for j in range(0,len(catidx)):
+      i=catidx[j]
+      renorm_data[:,i] = renorm_data[:,i] * (max_val[j] + 1e-6)   
+      renorm_data[:,i] = renorm_data[:,i] + min_val[j]
     
   return renorm_data
 

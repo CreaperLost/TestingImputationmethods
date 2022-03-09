@@ -81,7 +81,7 @@ class Gain():
         h_dim = int(dim)
         
         # Normalization
-        norm_data, self.norm_parameters = normalization(data_x)
+        norm_data, self.norm_parameters = normalization(data_x,None,self.catindx)
         norm_data_x = np.nan_to_num(norm_data, 0)
         
 
@@ -212,7 +212,7 @@ class Gain():
         h_dim = int(dim)
     
         # Normalization
-        norm_data, norm_parameters = normalization(data_x,self.norm_parameters)
+        norm_data, norm_parameters = normalization(data_x,self.norm_parameters,self.catindx)
         norm_data_x = np.nan_to_num(norm_data, 0)
 
         ## Return imputed data      
@@ -240,7 +240,7 @@ class Gain():
  
         imputed_data =imputed_data.detach().numpy()
         # Renormalization
-        imputed_data = renormalization(imputed_data, self.norm_parameters)  
+        imputed_data = renormalization(imputed_data, self.norm_parameters,self.catindx)  
         
         # Rounding if categoricals
         if len(self.catindx) >0 :
