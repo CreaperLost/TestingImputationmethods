@@ -145,18 +145,6 @@ def rmse_loss (ori_data, imputed_data, data_m):
   return rmse
 
 
-def xavier_init(size):
-  '''Xavier initialization.
-  
-  Args:
-    - size: vector size
-    
-  Returns:
-    - initialized random vector.
-  '''
-  in_dim = size[0]
-  xavier_stddev = 1. / tf.sqrt(in_dim / 2.)
-  return tf.compat.v1.random_normal(shape = size, stddev = xavier_stddev)
       
 
 def binary_sampler(p, rows, cols):
@@ -205,4 +193,32 @@ def sample_batch_index(total, batch_size):
   return batch_idx
   
 
-  
+  #%% Necessary Functions
+
+# 1. Xavier Initialization Definition
+# def xavier_init(size):
+#     in_dim = size[0]
+#     xavier_stddev = 1. / tf.sqrt(in_dim / 2.)
+#     return tf.random_normal(shape = size, stddev = xavier_stddev)
+def xavier_init(size):
+    in_dim = size[0]
+    xavier_stddev = 1. / np.sqrt(in_dim / 2.)
+    return np.random.normal(size = size, scale = xavier_stddev)
+    
+# Hint Vector Generation
+def sample_M(m, n, p):
+    A = np.random.uniform(0., 1., size = [m, n])
+    B = A > p
+    C = 1.*B
+    return C
+
+#%% 3. Other functions
+# Random sample generator for Z
+def sample_Z(m, n):
+    return np.random.uniform(0., 0.01, size = [m, n])        
+
+# Mini-batch generation
+def sample_idx(m, n):
+    A = np.random.permutation(m)
+    idx = A[:n]
+    return idx
