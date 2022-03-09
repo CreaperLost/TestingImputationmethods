@@ -43,7 +43,6 @@ class Gain():
         self.hint_rate = parameters.get('hint_rate',0.9)
         self.alpha = parameters.get('alpha',1)
         self.iterations = parameters.get('iterations',10000)
-        self.Indi =  parameters.get('Binary_Indicator',False)
 
         self.theta_G= None
         self.names = names
@@ -71,10 +70,6 @@ class Gain():
         #Code by George Paterakis
         #List of Lists -->> np.array with samples as rows and features as columns.
         data_x=np.transpose(np.array(X))
-
-        if self.Indi == True:
-            self.Indicator_var = MissingIndicator(error_on_new=False)
-            self.Indicator_var.fit(data_x)
 
         # Define mask matrix
         data_m = 1-np.isnan(data_x)
@@ -114,10 +109,6 @@ class Gain():
         G_b3 = torch.tensor(np.zeros(shape = [h_dim]),requires_grad=True)
 
         self.theta_G = [G_W1, G_W2, G_W3, G_b1, G_b2, G_b3]
-
-
-
-        
 
         # 2. Discriminator
         def discriminator(new_x, h):
@@ -165,11 +156,8 @@ class Gain():
             return G_loss, MSE_train_loss, MSE_test_loss
 
         
-
         optimizer_D = torch.optim.Adam(params=theta_D)
         optimizer_G = torch.optim.Adam(params=self.theta_G)
-
-        
         
         #%% Start Iterations
         for it in tqdm(range(self.iterations)):    
@@ -214,9 +202,6 @@ class Gain():
         #List of Lists -->> np.array with samples as rows and features as columns.
         data_x=np.transpose(np.array(X))
 
-        if self.Indi==True:
-            X_indi = self.Indicator_var.transform(data_x)
-            extra_col = ['Bi_' + str(i) for i in range(X_indi.shape[1])]
         # Define mask matrix
         data_m = 1-np.isnan(data_x)
     
@@ -242,39 +227,24 @@ class Gain():
         New_X_mb = torch.tensor(New_X_mb).double()
         
         def test_loss(X, M, New_X):
-            #%% Structure
-            # Generator
+            #Generator
             G_sample = self.generator(New_X,M)
 
-            #%% MSE Performance metric
+            # MSE Performance metric
             MSE_test_loss = torch.mean(((1-M) * X - (1-M)*G_sample)**2) / torch.mean(1-M)
             return MSE_test_loss, G_sample
 
         MSE_final, Sample = test_loss(X=X_mb, M=M_mb, New_X=New_X_mb)
-                
-        #print('Final Test RMSE: ' + str(np.sqrt(MSE_final.item())))
-
-
-
-
-
-        
+                        
         imputed_data = M_mb * X_mb + (1-M_mb) * Sample
  
         imputed_data =imputed_data.detach().numpy()
         # Renormalization
         imputed_data = renormalization(imputed_data, self.norm_parameters)  
         
-        # Rounding
-        #if categoricals
+        # Rounding if categoricals
         if len(self.catindx) >0 :
             imputed_data = rounding(imputed_data, self.catindx)  
-
-        if self.Indi == True:
-            imputed_data  = np.concatenate((imputed_data ,X_indi),axis=1)
-            new_names = self.new_names + extra_col
-            X=np.transpose(np.array(imputed_data)).tolist()
-            return X,new_names, self.new_vmaps
 
         imputed_data = np.transpose(np.array(imputed_data)).tolist()
 
