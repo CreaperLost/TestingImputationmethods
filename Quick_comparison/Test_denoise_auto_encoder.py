@@ -45,7 +45,7 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
     kf = KFold(n_splits=5,shuffle=True,random_state=100)
     for train_index, test_index in kf.split(x):
         X_train, X_test = x.iloc[train_index], x.iloc[test_index]
-        y_train, y_test = y.iloc[train_index], y[test_index]
+        y_train, y_test = y.iloc[train_index], y.iloc[test_index]
 
 
         column_names = list(X_train.columns)
@@ -101,7 +101,8 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
 
 
 
-for file_name in glob.glob('realdata/'+'*.csv'):
+#for file_name in glob.glob('realdata/'+'*.csv'):
+for file_name in ['realdata\MAR_50_zoo.csv']:
 #for file_name in ['realdata\\lymphoma_2classes.csv','realdata\\NewFuelCar.csv']: 
     if file_name == 'realdata\colleges_aaup.csv':
         categorical_features = ["State", "Type"]
@@ -117,12 +118,14 @@ for file_name in glob.glob('realdata/'+'*.csv'):
         categorical_features = ['target','sex']
     elif file_name == 'realdata\pbcseq2.csv':
         categorical_features = ['status','drug','sex','presence_of_asictes','presence_of_hepatomegaly','presence_of_spiders']
+    elif file_name == 'realdata\MAR_50_zoo.csv':
+        categorical_features = ['hair','feathers','eggs','milk','airborne','aquatic','predator','toothed','backbone','breathes','venomous','fins','tail','domestic','catsize']
     else:
         categorical_features = []
     vmaps=dict(zip(categorical_features, ['' for i in categorical_features]))
 
-    for ep in [500]:
-        for theta in [7]:
-            for drop in [0.5]:
+    for ep in [500,1000]:
+        for theta in [7,10]:
+            for drop in [0.25,0.5]:
                 error,total=loop(dataset=file_name,sep=';',na_values='?',outcome_Type='binaryClass',problem='C',vmaps=vmaps,parameter={"epochs":ep,"dropout":drop,"theta":theta})
                 print('Error for ' + file_name+   ' : ' + str(error) + '  Time : ' + str(datetime.timedelta(seconds=total)) + ' Params  : ' + str({"epochs":ep,"dropout":drop,"theta":theta}) )

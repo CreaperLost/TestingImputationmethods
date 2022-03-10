@@ -9,11 +9,6 @@ from sklearn.utils import shuffle
 from sklearn.ensemble import RandomForestClassifier,RandomForestRegressor
 from sklearn.metrics import mean_squared_error,r2_score
 from sklearn.metrics import accuracy_score,roc_auc_score
-import sklearn
-from dae import DAE
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import OrdinalEncoder
-from MissForest_Mixed import IterativeImputer
 from sklearn.preprocessing import OrdinalEncoder,LabelEncoder,LabelBinarizer
 from sklearn.impute import SimpleImputer
 import os
@@ -121,6 +116,8 @@ for file_name in glob.glob('realdata/'+'*.csv'):
         categorical_features = ['target','sex']
     elif file_name == 'realdata\pbcseq2.csv':
         categorical_features = ['status','drug','sex','presence_of_asictes','presence_of_hepatomegaly','presence_of_spiders']
+    elif file_name == 'realdata\MAR_50_zoo.csv':
+        categorical_features = ['hair','feathers','eggs','milk','airborne','aquatic','predator','toothed','backbone','breathes','venomous','fins','tail','domestic','catsize']
     else:
         categorical_features = []
     vmaps=dict(zip(categorical_features, ['' for i in categorical_features]))

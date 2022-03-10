@@ -1,0 +1,17 @@
+Error for realdata\colleges_aaup.csv : 0.9810041180053745  Time : 0:00:00.014998
+Error for realdata\colleges_usnews.csv : 0.7406798061586597  Time : 0:00:00.020001
+Error for realdata\echoMonths.csv : 0.4160791833176149  Time : 0:00:00.009005
+Error for realdata\fishcatch.csv : 0.9457431238398165  Time : 0:00:00.009005
+Error for realdata\heart-h.csv : 0.7642066232700907  Time : 0:00:00.015997
+Error for realdata\hungarian.csv : 0.7734898400533075  Time : 0:00:00.006999
+Error for realdata\kdd_el_nino-small.csv : 0.9444404917096865  Time : 0:00:00.007996
+Error for realdata\lymphoma_2classes.csv : 0.9349999999999999  Time : 0:00:00.493001
+Error for realdata\MAR_50_parkinsons.csv : 0.7387845907343061  Time : 0:00:00.008996
+Error for realdata\MAR_50_stock.csv : 0.8891134361884948  Time : 0:00:00.008996
+Error for realdata\MAR_50_zoo.csv : 0.9809090909090908  Time : 0:00:00.008996
+Error for realdata\meta.csv : -9.179919426447166  Time : 0:00:00.012998
+Error for realdata\Moneyball.csv : 0.9249346611286354  Time : 0:00:00.010001
+Error for realdata\NewFuelCar.csv : 0.9986513140381433  Time : 0:00:00.093996
+Error for realdata\pbcseq2.csv : 0.8224132815654752  Time : 0:00:00.022001
+Error for realdata\schizo.csv : 0.6929980002367774  Time : 0:00:00.016001
+Error for realdata\water-treatment.csv : 0.8718353438810272  Time : 0:00:00.013000
