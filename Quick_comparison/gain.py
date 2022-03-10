@@ -2,19 +2,11 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-import numpy as np
-from tqdm.notebook import tqdm_notebook as tqdm
-import seaborn as sns
-sns.set()
-import numpy as np
-import numpy as np
-from tqdm import tqdm
-from utils import normalization, renormalization, rounding
-from utils import xavier_init
-from utils import binary_sampler, uniform_sampler, sample_batch_index
-from sklearn.impute import MissingIndicator
+from tqdm import tqdm as tq
+from gain_utils import normalization, renormalization, rounding
+from gain_utils import xavier_init
+from gain_utils import binary_sampler, uniform_sampler, sample_batch_index
 import torch
-import numpy as np
 import torch.nn.functional as F
 import numpy as np
 
@@ -160,16 +152,16 @@ class Gain():
         optimizer_G = torch.optim.Adam(params=self.theta_G)
         
         #%% Start Iterations
-        for it in tqdm(range(self.iterations)):    
+        for it in tq(range(self.iterations)):    
             
             #%% Inputs
-            mb_idx = sample_batch_index(no, self.batch_size)
+            mb_idx = sample_batch_index(no, min(self.batch_size, no))
             X_mb = norm_data_x[mb_idx,:]  
             
-            Z_mb = uniform_sampler(0, 0.01, self.batch_size, dim) 
+            Z_mb = uniform_sampler(0, 0.01, min(self.batch_size, no), dim) 
             M_mb = data_m[mb_idx,:]  
             # Sample hint vectors
-            H_mb_temp = binary_sampler(self.hint_rate, self.batch_size, dim)
+            H_mb_temp = binary_sampler(self.hint_rate, min(self.batch_size, no), dim)
             H_mb = M_mb * H_mb_temp
            
             

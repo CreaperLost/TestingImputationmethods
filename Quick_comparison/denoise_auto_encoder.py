@@ -50,11 +50,11 @@ class DAE():
     def __init__(self,parameters: dict, names: list, vmaps: dict,
                  missing_values=np.nan):
        
-        self.device = torch.device('cpu')
         
         self.theta = parameters.get("theta",7)
         self.drop_out = parameters.get("dropout",0.5)
         self.batch_size = parameters.get("batch_size",64)
+        self.epochs = parameters.get("epochs",500)
         self.dim = len(names)
 
         self.model = None
@@ -65,7 +65,7 @@ class DAE():
         
         self.onehot  = OneHotEncoder(handle_unknown='ignore',sparse=False)
 
-        self.epochs = parameters.get("epochs",500)
+        
         self.names = names
         self.new_names = names
         self.vmaps = vmaps
@@ -141,6 +141,8 @@ class DAE():
         Xt : array-like, shape (n_samples, n_features)
             The imputed input data.
         """
+        device = torch.device('cpu')
+        
         self.initial_imputer_Mean = None
         self.initial_imputer_Mode = None
 
@@ -174,7 +176,7 @@ class DAE():
 
         train_data = torch.from_numpy(X_conc).float()
 
-        train_loader = torch.utils.data.DataLoader(dataset=train_data,batch_size=self.batch_size,shuffle=True)
+        train_loader = torch.utils.data.DataLoader(dataset=train_data,batch_size=min(self.batch_size, X.shape[0]),shuffle=True)
 
 
         cost_list = []
@@ -182,18 +184,18 @@ class DAE():
 
         self.dim = X_conc.shape[1]
 
-        self.model = Autoencoder(dim = self.dim,theta = self.theta,dropout=self.drop_out).to(self.device)
+        self.model = Autoencoder(dim = self.dim,theta = self.theta,dropout=self.drop_out).to(device)
         self.loss = nn.MSELoss()
         self.optimizer = optim.SGD(self.model.parameters(), momentum=0.99, lr=0.01, nesterov=True)
 
 
         for epoch in range(self.epochs):
             
-            total_batch = len(train_data)//self.batch_size
+            total_batch = len(train_data)//min(self.batch_size, X.shape[0])
             
             for i, batch_data in enumerate(train_loader):
                 
-                batch_data = batch_data.to(self.device)
+                batch_data = batch_data.to(device)
                 
                 reconst_data = self.model(batch_data)
                 cost = self.loss(reconst_data, batch_data)
@@ -217,7 +219,7 @@ class DAE():
 
         #Evaluate
         self.model.eval()
-        filled_data = self.model(train_data.to(self.device))
+        filled_data = self.model(train_data.to(device))
         filled_data_train = filled_data.cpu().detach().numpy()
 
 
@@ -253,6 +255,7 @@ class DAE():
         Xt : array-like, shape (n_samples, n_features)
              The imputed input data.
         """
+        device = torch.device('cpu')
         #check_is_fitted(self)
 
         #Code by George Paterakis
@@ -286,7 +289,7 @@ class DAE():
         self.model.eval()
 
         #Transform Test set
-        filled_data = self.model(X_filled.to(self.device))
+        filled_data = self.model(X_filled.to(device))
         filled_data_test = filled_data.cpu().detach().numpy()
         X_r = filled_data_test
 
