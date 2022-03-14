@@ -55,6 +55,7 @@ class DAE():
         self.drop_out = parameters.get("dropout",0.5)
         self.batch_size = parameters.get("batch_size",64)
         self.epochs = parameters.get("epochs",500)
+        self.lr = parameters.get("lr",0.01)
         self.dim = len(names)
 
         self.model = None
@@ -186,7 +187,7 @@ class DAE():
 
         self.model = Autoencoder(dim = self.dim,theta = self.theta,dropout=self.drop_out).to(device)
         self.loss = nn.MSELoss()
-        self.optimizer = optim.SGD(self.model.parameters(), momentum=0.99, lr=0.01, nesterov=True)
+        self.optimizer = optim.SGD(self.model.parameters(), momentum=0.99, lr=self.lr, nesterov=True)
 
 
         for epoch in range(self.epochs):
