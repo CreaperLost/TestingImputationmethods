@@ -16,6 +16,7 @@ import datetime
 import glob
 import pandas as pd
 from sklearn.compose import ColumnTransformer
+from knn_simple import KNNImputer
 
 
 
@@ -54,20 +55,25 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
         y_train, y_test = y.iloc[train_index], y[test_index]
 
 
+        LL_train = np.transpose(X_train.values).tolist()
+        LL_test  = np.transpose(X_test.values).tolist()
+
         column_names = list(X_train.columns)
 
 
         start = time.time()
-        from knn_simple import KNNImputer
         imputer = KNNImputer(n_neighbors=5,parameters=params,vmaps=vmaps,names=column_names)
 
         #print([column_names.index(i) for i in vmaps.keys()],[column_names.index(i) for i in column_names if i not in vmaps.keys()])
         #imputer = SimpleImputer()
-        Methods_Impute = imputer.fit(X_train.values)
+        Methods_Impute = imputer.fit(LL_train)
         
-        Imputed_Train=Methods_Impute.transform(X_train.values)
-        Imputed_Test= Methods_Impute.transform(X_test.values)
+        Imputed_Train,Train_Column_names,Train_VMaps =Methods_Impute.transform(LL_train)
+        Imputed_Test,Test_Column_names,Test_VMaps = Methods_Impute.transform(LL_test)
 
+        #Turn LL to NP ARRAY
+        Imputed_Train = np.transpose(np.array(Imputed_Train))
+        Imputed_Test  = np.transpose(np.array(Imputed_Test))
 
 
         total = total + time.time()-start
@@ -75,9 +81,6 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
         #NP ARRAY TO DF
         X__train_imputed = pd.DataFrame(Imputed_Train,columns=column_names) 
         X__test_imputed = pd.DataFrame(Imputed_Test,columns=column_names) 
-
-        print(X__test_imputed)
-
 
         if outcome_Type == 'binaryClass':
             RF_Model = RandomForestClassifier(random_state=0)
@@ -96,8 +99,8 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
 
 
        
-#for file_name in glob.glob('realdata/'+'*.csv'):
-for file_name in ['realdata/MAR_50_zoo.csv']:    
+for file_name in glob.glob('realdata/'+'*.csv'):
+#for file_name in ['realdata/MAR_50_zoo.csv']:    
     if file_name == 'realdata\colleges_aaup.csv':
         categorical_features = ["State", "Type"]
     elif file_name == 'realdata\colleges_usnews.csv':

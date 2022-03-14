@@ -1,5 +1,4 @@
 
-import numpy as np
 """
 from ._base import _BaseImputer
 from ..utils.validation import FLOAT_DTYPES
@@ -11,6 +10,7 @@ from ..utils import is_scalar_nan
 from ..utils._mask import _get_mask
 from ..utils.validation import check_is_fitted
 """
+import numpy as np
 from sklearn.neighbors._base import _get_weights,_check_weights
 from sklearn.metrics import pairwise_distances_chunked
 from sklearn.metrics.pairwise import _NAN_METRICS
@@ -202,6 +202,8 @@ class KNNImputer(_BaseImputer):
                 "Expected n_neighbors > 0. Got {}".format(self.n_neighbors)
             )
 
+        X=np.transpose(np.array(X))
+
         X = self._validate_data(
             X,
             accept_sparse=False,
@@ -236,6 +238,9 @@ class KNNImputer(_BaseImputer):
             force_all_finite = True
         else:
             force_all_finite = "allow-nan"
+
+        X=np.transpose(np.array(X))
+    
         X = self._validate_data(
             X,
             accept_sparse=False,
@@ -244,6 +249,8 @@ class KNNImputer(_BaseImputer):
             copy=self.copy,
             reset=False,
         )
+
+
 
         mask = _get_mask(X, self.missing_values)
         mask_fit_X = self._mask_fit_X
@@ -332,9 +339,11 @@ class KNNImputer(_BaseImputer):
             force_all_finite=force_all_finite,
             reduce_func=process_chunk,
         )
+
         for chunk in gen:
             # process_chunk modifies X in place. No return value.
             pass
+        imputed_data = np.transpose(np.array(super()._concatenate_indicator(X[:, valid_mask], X_indicator))).tolist()
 
-        return super()._concatenate_indicator(X[:, valid_mask], X_indicator)
+        return imputed_data,self.names,self.vmaps
 
