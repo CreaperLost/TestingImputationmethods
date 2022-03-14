@@ -42,7 +42,7 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
     total = 0
     error = 0
     
-    kf = KFold(n_splits=5,shuffle=True,random_state=100)
+    kf = KFold(n_splits=2,shuffle=True,random_state=100)
     for train_index, test_index in kf.split(x):
         X_train, X_test = x.iloc[train_index], x.iloc[test_index]
         y_train, y_test = y.iloc[train_index], y.iloc[test_index]
@@ -93,7 +93,7 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
             error += roc_auc_score(y_test,preds)
         else:
             error += r2_score(y_test,preds)
-    return error/5,total
+    return error/2,total
 
 
 
@@ -102,30 +102,30 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
 
 
 #for file_name in glob.glob('realdata/'+'*.csv'):
-for file_name in ['realdata\MAR_50_zoo.csv']:
+for file_name in ['realdata/MAR_50_zoo.csv']:
 #for file_name in ['realdata\\lymphoma_2classes.csv','realdata\\NewFuelCar.csv']: 
-    if file_name == 'realdata\colleges_aaup.csv':
+    if file_name == 'realdata/colleges_aaup.csv':
         categorical_features = ["State", "Type"]
-    elif file_name == 'realdata\colleges_usnews.csv':
+    elif file_name == 'realdata/colleges_usnews.csv':
         categorical_features = ["State"]
     elif file_name == 'realdata\heart-h.csv':
         categorical_features = ["sex","chest_pain","fbs","restecg","exang","slope","thal"]
-    elif file_name == 'realdata\kdd_coil_1.csv':
+    elif file_name == 'realdata/kdd_coil_1.csv':
         categorical_features = ["season","river_size","fluid_velocity"]
     elif file_name == 'realdata\meta.csv':
         categorical_features = ['DS_Name','Alg_Name']
-    elif file_name == 'realdata\schizo.csv':
+    elif file_name == 'realdata/schizo.csv':
         categorical_features = ['target','sex']
-    elif file_name == 'realdata\pbcseq2.csv':
+    elif file_name == 'realdata/pbcseq2.csv':
         categorical_features = ['status','drug','sex','presence_of_asictes','presence_of_hepatomegaly','presence_of_spiders']
-    elif file_name == 'realdata\MAR_50_zoo.csv':
+    elif file_name == 'realdata/MAR_50_zoo.csv':
         categorical_features = ['hair','feathers','eggs','milk','airborne','aquatic','predator','toothed','backbone','breathes','venomous','fins','tail','domestic','catsize']
     else:
         categorical_features = []
     vmaps=dict(zip(categorical_features, ['' for i in categorical_features]))
 
     for ep in [500]:
-        for theta in [7,10]:
+        for theta in [7]:
             for drop in [0.25,0.5]:
                 for lr in [0.01]:
                     error,total=loop(dataset=file_name,sep=';',na_values='?',outcome_Type='binaryClass',problem='C',vmaps=vmaps,parameter={"epochs":ep,"dropout":drop,"theta":theta,"lr":lr})
