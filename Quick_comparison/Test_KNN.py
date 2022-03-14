@@ -20,10 +20,10 @@ from sklearn.compose import ColumnTransformer
 
 
 
-def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vmaps={}):
+def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vmaps={},params={}):
 
-
-    if dataset == 'realdata\lymphoma_2classes.csv':
+    print(dataset)
+    if dataset == 'realdata/lymphoma_2classes.csv':
         df = pd.read_csv(dataset,na_values=na_values,sep=sep,header=None)
     else:
         df = pd.read_csv(dataset,na_values=na_values,sep=sep)
@@ -36,7 +36,7 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
         outcome_Type = 'outcome'
 
 
-    if dataset == 'realdata\lymphoma_2classes.csv':
+    if dataset == 'realdata/lymphoma_2classes.csv':
         outcome_Type = 'binaryClass'
         y = pd.Series(LabelEncoder().fit_transform(df[df.columns[-1]]))
         x = df.drop(df.columns[-1],axis=1)
@@ -59,7 +59,7 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
 
         start = time.time()
         from knn_simple import KNNImputer
-        imputer = KNNImputer(n_neighbors=5)
+        imputer = KNNImputer(n_neighbors=5,parameters=params,vmaps=vmaps,names=column_names)
 
         #print([column_names.index(i) for i in vmaps.keys()],[column_names.index(i) for i in column_names if i not in vmaps.keys()])
         #imputer = SimpleImputer()
@@ -76,6 +76,7 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
         X__train_imputed = pd.DataFrame(Imputed_Train,columns=column_names) 
         X__test_imputed = pd.DataFrame(Imputed_Test,columns=column_names) 
 
+        print(X__test_imputed)
 
 
         if outcome_Type == 'binaryClass':
@@ -95,8 +96,8 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
 
 
        
-for file_name in glob.glob('realdata/'+'*.csv'):
-    
+#for file_name in glob.glob('realdata/'+'*.csv'):
+for file_name in ['realdata/MAR_50_zoo.csv']:    
     if file_name == 'realdata\colleges_aaup.csv':
         categorical_features = ["State", "Type"]
     elif file_name == 'realdata\colleges_usnews.csv':

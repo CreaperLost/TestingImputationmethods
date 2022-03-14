@@ -18,6 +18,8 @@ from sklearn.utils import is_scalar_nan
 from sklearn.utils.validation import FLOAT_DTYPES, check_is_fitted
 from sklearn.utils._mask import _get_mask
 from sklearn.impute._base import _BaseImputer
+from scipy import stats
+
 
 class KNNImputer(_BaseImputer):
     """Imputation for completing missing values using k-Nearest Neighbors.
@@ -107,15 +109,27 @@ class KNNImputer(_BaseImputer):
         weights="uniform",
         metric="nan_euclidean",
         copy=True,
-        add_indicator=False,
+        add_indicator=False,parameters: dict, names: list, vmaps: dict,
     ):
         super().__init__(missing_values=missing_values, add_indicator=add_indicator)
-        self.n_neighbors = n_neighbors
+        self.n_neighbors = parameters.get("n_neighbors",5)
         self.weights = weights
         self.metric = metric
         self.copy = copy
 
-    def _calc_impute(self, dist_pot_donors, n_neighbors, fit_X_col, mask_fit_X_col):
+        self.names = names
+        self.new_names = names
+        self.vmaps = vmaps
+        self.new_vmaps = vmaps
+
+        #The indexes for categorical features in feature list.
+        self.catindx = [names.index(i) for i in vmaps.keys()]
+        self.numindx = [names.index(i) for i in names if i not in vmaps.keys()]
+        self.cat_names = [i for i in vmaps.keys()]
+        self.num_names = [i for i in names if i not in vmaps.keys()]
+        self.missing_values = missing_values
+
+    def _calc_impute(self, dist_pot_donors, n_neighbors, fit_X_col, mask_fit_X_col,col_indx):
         """Helper function to impute a single column.
         Parameters
         ----------
@@ -149,14 +163,18 @@ class KNNImputer(_BaseImputer):
         # fill nans with zeros
         if weight_matrix is not None:
             weight_matrix[np.isnan(weight_matrix)] = 0.0
-
+        
         # Retrieve donor values and calculate kNN average
         donors = fit_X_col.take(donors_idx)
         donors_mask = mask_fit_X_col.take(donors_idx)
         donors = np.ma.array(donors, mask=donors_mask)
         #.average is the official
-        #np.ma.average(donors, axis=1, weights=weight_matrix).data
-        return np.ma.median(donors, axis=1).data
+        #
+
+        if col_indx in self.numindx:
+            return np.ma.average(donors, axis=1, weights=weight_matrix).data
+        
+        return stats.mode(donors,axis=1).mode.flatten()
 
     def fit(self, X, y=None):
         """Fit the imputer on X.
@@ -271,14 +289,19 @@ class KNNImputer(_BaseImputer):
                     :, potential_donors_idx
                 ]
 
-                # receivers with all nan distances impute with mean
+                # receivers with all nan distances impute with mean for numerical,mode for categorical.
                 all_nan_dist_mask = np.isnan(dist_subset).all(axis=1)
                 all_nan_receivers_idx = receivers_idx[all_nan_dist_mask]
 
                 if all_nan_receivers_idx.size:
-                    col_mean = np.ma.median(np.ma.array(
-                        self._fit_X[:, col], mask=mask_fit_X[:, col]
-                    )) #.mean()
+                    if col in self.numindx:
+                        col_mean = (np.ma.array(
+                            self._fit_X[:, col], mask=mask_fit_X[:, col]
+                        )).mean() #
+                    else:
+                        col_mean = np.ma.mode(np.ma.array(
+                            self._fit_X[:, col], mask=mask_fit_X[:, col]
+                        ))
                     X[all_nan_receivers_idx, col] = col_mean
 
                     if len(all_nan_receivers_idx) == len(receivers_idx):
@@ -296,7 +319,7 @@ class KNNImputer(_BaseImputer):
                     dist_subset,
                     n_neighbors,
                     self._fit_X[potential_donors_idx, col],
-                    mask_fit_X[potential_donors_idx, col],
+                    mask_fit_X[potential_donors_idx, col],col
                 )
                 X[receivers_idx, col] = value
 
