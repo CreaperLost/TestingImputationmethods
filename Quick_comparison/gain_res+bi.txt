@@ -6,3 +6,14 @@ Error for realdata\MAR_50_zoo.csv : 0.8901774930986888  Time : 0:01:06.103052 Pa
 Error for realdata\MAR_50_zoo.csv : 0.9256383712905452  Time : 0:01:02.303299 Params  : {'epochs': 10000, 'hint_rate': 0.5, 'alpha': 10}
 Error for realdata\MAR_50_zoo.csv : 0.8902152346445824  Time : 0:00:52.195204 Params  : {'epochs': 10000, 'hint_rate': 0.9, 'alpha': 1}
 Error for realdata\MAR_50_zoo.csv : 0.9269215838509317  Time : 0:00:53.509039 Params  : {'epochs': 10000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\MAR_50_zoo.csv : 0.8646318581780539  Time : 0:00:04.373135 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\colleges_aaup.csv : 0.9785367465227315  Time : 0:00:04.731658 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\colleges_usnews.csv : 0.7390233483304136  Time : 0:00:08.099001 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\echoMonths.csv : 0.3579553237798716  Time : 0:00:04.068037 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\fishcatch.csv : 0.9515695780101232  Time : 0:00:04.012030 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\heart-h.csv : 0.7787223659226536  Time : 0:00:04.283000 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\hungarian.csv : 0.7667840085638998  Time : 0:00:04.418021 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\kdd_el_nino-small.csv : 0.9243759404036174  Time : 0:00:04.073001 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\MCAR_50_Boston.csv : 0.7627333782228798  Time : 0:00:04.407998 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\MCAR_50_Boston.csv : 0.7488786889124485  Time : 0:00:04.389002 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\MCAR_50_Australian.csv : 0.8044370777408045  Time : 0:00:04.486999 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}

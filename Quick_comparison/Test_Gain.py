@@ -93,8 +93,9 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
     return error/2,total
 
 
-#$for file_name in glob.glob('realdata/'+'*.csv'):
-for file_name in ['realdata\MAR_50_zoo.csv']:
+#for file_name in glob.glob('realdata/'+'*.csv'):
+#for file_name in ['realdata\MAR_50_zoo.csv']:
+for file_name in ['realdata\MCAR_50_Boston.csv','realdata\MCAR_50_Australian.csv']:
     if file_name == 'realdata\lymphoma_2classes.csv':
         continue
     if file_name == 'realdata\colleges_aaup.csv':
@@ -109,15 +110,18 @@ for file_name in ['realdata\MAR_50_zoo.csv']:
         categorical_features = ['DS_Name','Alg_Name']
     elif file_name == 'realdata\schizo.csv':
         categorical_features = ['target','sex']
+    elif file_name == 'realdata\MCAR_50_Boston.csv':
+        categorical_features = ['target','sex']
     elif file_name == 'realdata\MAR_50_zoo.csv':
+        print('niar')
         categorical_features = ['hair','feathers','eggs','milk','airborne','aquatic','predator','toothed','backbone','breathes','venomous','fins','tail','domestic','catsize']
     else:
         categorical_features = []
     vmaps=dict(zip(categorical_features, ['' for i in categorical_features]))
 
-    for ep in [10000]:
-        for hi_p in [0.5,0.9]:
-            for alp in [1,10]:
+    for ep in [1000]:
+        for hi_p in [0.9]:
+            for alp in [10]:
                 error , total = loop(dataset=file_name,sep=';',na_values='?',outcome_Type='binaryClass',problem='C',vmaps=vmaps,parameter={"iterations":ep,"hint_rate":hi_p,"alpha":alp,"Binary_Indicator":True})
                 print('Error for ' + file_name+   ' : ' + str(error) + '  Time : ' + str(datetime.timedelta(seconds=total)) + ' Params  : ' + str({"epochs":ep,"hint_rate":hi_p,"alpha":alp}) )
                 with open('gain_res+bi.txt', 'a') as the_file:

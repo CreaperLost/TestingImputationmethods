@@ -19,7 +19,7 @@ from sklearn.utils.validation import FLOAT_DTYPES, check_is_fitted
 from sklearn.utils._mask import _get_mask
 from sklearn.impute._base import _BaseImputer
 from scipy import stats
-
+from knn_utils import gower_distances
 
 class KNNImputer(_BaseImputer):
     """Imputation for completing missing values using k-Nearest Neighbors.
@@ -331,14 +331,23 @@ class KNNImputer(_BaseImputer):
                 X[receivers_idx, col] = value
 
         # process in fixed-memory chunks
+        self.metric = gower_distances
         gen = pairwise_distances_chunked(
+            X[row_missing_idx, :],
+            self._fit_X,
+            metric=self.metric,
+            reduce_func=process_chunk,
+            categorical_features = self.catindx,
+            force_all_finite=force_all_finite
+        )
+        """gen = pairwise_distances_chunked(
             X[row_missing_idx, :],
             self._fit_X,
             metric=self.metric,
             missing_values=self.missing_values,
             force_all_finite=force_all_finite,
             reduce_func=process_chunk,
-        )
+        )"""
 
         for chunk in gen:
             # process_chunk modifies X in place. No return value.
