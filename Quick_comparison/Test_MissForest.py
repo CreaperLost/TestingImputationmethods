@@ -9,10 +9,9 @@ from sklearn.ensemble import RandomForestClassifier,RandomForestRegressor
 from sklearn.metrics import mean_squared_error,r2_score
 from sklearn.metrics import accuracy_score,roc_auc_score
 import sklearn
-from dae import DAE
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import OrdinalEncoder
-from MissForest_Mixed import IterativeImputer
+from missForest import IterativeImputer
 from sklearn.preprocessing import OrdinalEncoder,LabelEncoder,LabelBinarizer
 from sklearn.impute import SimpleImputer
 import glob

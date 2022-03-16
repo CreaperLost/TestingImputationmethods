@@ -101,9 +101,11 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
        
 for file_name in glob.glob('realdata/'+'*.csv'):
 #for file_name in ['realdata/MAR_50_zoo.csv']:    
-    if file_name == 'realdata\colleges_aaup.csv':
+    if file_name == 'realdata/colleges_aaup.csv':
+        continue
         categorical_features = ["State", "Type"]
-    elif file_name == 'realdata\colleges_usnews.csv':
+    elif file_name == 'realdata/colleges_usnews.csv':
+        continue
         categorical_features = ["State"]
     elif file_name == 'realdata\heart-h.csv':
         categorical_features = ["sex","chest_pain","fbs","restecg","exang","slope","thal"]

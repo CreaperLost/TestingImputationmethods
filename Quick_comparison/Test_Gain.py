@@ -57,7 +57,7 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
 
         column_names = list(X_train.columns)
 
-
+        print(column_names)
         start = time.time()
         imputer = Gain(parameters=parameter,vmaps=vmaps,names=column_names)
 

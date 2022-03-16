@@ -10,7 +10,7 @@ from sklearn.utils import shuffle
 from sklearn.ensemble import RandomForestClassifier,RandomForestRegressor
 from sklearn.metrics import mean_squared_error,r2_score
 from sklearn.metrics import accuracy_score,roc_auc_score
-from sklearn.preprocessing import OrdinalEncoder,LabelEncoder,LabelBinarizer
+from sklearn.preprocessing import OrdinalEncoder,LabelEncoder,LabelBinarizer, StandardScaler
 from sklearn.impute import SimpleImputer
 import os
 import datetime
@@ -18,11 +18,65 @@ import glob
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 
+print(iai.get_machine_id())
 
 
 
-def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vmaps={}):
 
+class KNN_Imputation():
+
+    def __init__(self,parameters: dict, names: list, vmaps: dict) -> None:
+        # System parameters
+        self.knn_k = parameters.get('knn_k',5)
+
+        self.names = names
+        self.new_names = names
+        self.vmaps = vmaps
+        self.new_vmaps = vmaps
+
+        self.model =  None
+        #The indexes for categorical features in feature list.
+        self.catindx = [names.index(i) for i in vmaps.keys()]
+        self.numindx = [names.index(i) for i in names if i not in vmaps.keys()]
+        self.cat_names = [i for i in vmaps.keys()]
+        self.num_names = [i for i in names if i not in vmaps.keys()]
+  
+
+    def fit(self,X):
+        #Code by George Paterakis
+        #List of Lists -->> np.array with samples as rows and features as columns.
+        missing_data=np.transpose(np.array(X))
+
+        na_data=pd.DataFrame(missing_data,columns=self.names)
+
+        col_cat = self.catindx
+        if len(col_cat) > 0:
+            na_data.iloc[:,col_cat] = na_data.iloc[:,col_cat].astype('category')
+        
+        self.method = iai.SingleKNNImputationLearner(knn_k=self.knn_k,treat_unknown_level_missing=True,random_seed=1).fit(na_data)
+
+        return self
+               
+    def transform(self,X):
+        #Code by George Paterakis
+        #List of Lists -->> np.array with samples as rows and features as columns.
+        data_x=np.transpose(np.array(X))
+
+        na_data=pd.DataFrame(data_x,columns=self.names)
+
+        col_cat = self.catindx
+        if len(col_cat) > 0:
+            na_data.iloc[:,col_cat] = na_data.iloc[:,col_cat].astype('category')
+
+        imputed_data=self.method.transform(na_data)
+
+        imputed_data = np.transpose(np.array(imputed_data)).tolist()
+
+        return imputed_data,self.names,self.vmaps
+
+
+
+def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vmaps={},parameter={}):
 
     if dataset == 'realdata\lymphoma_2classes.csv':
         df = pd.read_csv(dataset,na_values=na_values,sep=sep,header=None)
@@ -54,33 +108,37 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
         X_train, X_test = x.iloc[train_index], x.iloc[test_index]
         y_train, y_test = y.iloc[train_index], y[test_index]
 
+        sclr=StandardScaler().fit(X_train)
 
         column_names = list(X_train.columns)
 
         start = time.time()
         
-        imputer = iai.SingleKNNImputationLearner(knn_k = 5)
+        imputer = KNN_Imputation(parameters=parameter,vmaps=vmaps,names=column_names)
         
+        
+        """
         col_cat = [i for i in vmaps.keys()]
-        X_train[col_cat] = X_train[col_cat].astype('category')
-        X_test[col_cat] = X_test[col_cat].astype('category')
+        if len(col_cat) > 0:
+            X_train[col_cat] = X_train[col_cat].astype('category')
+            X_test[col_cat] = X_test[col_cat].astype('category')
+        """
+        LL_train = np.transpose(X_train.values).tolist()
+        LL_test  = np.transpose(X_test.values).tolist()
 
-
-        Methods_Impute = imputer.fit(X_train)
-
-        Imputed_Train=Methods_Impute.transform(X_train)
-        Imputed_Test= Methods_Impute.transform(X_test)
+        Methods_Impute = imputer.fit(LL_train)
         
-        print(Imputed_Train)
-        print(Imputed_Test)
+        #treat_unknown_level_missing = 'true'
+        Imputed_Train,Train_Column_names,Train_VMaps=Methods_Impute.transform(LL_train)
+        Imputed_Test,Test_Column_names,Test_VMaps= Methods_Impute.transform(LL_test)
+        
 
         total = total + time.time()-start
          
-        #NP ARRAY TO DF
-        #X__train_imputed = pd.DataFrame(Imputed_Train,columns=column_names) 
-        #X__test_imputed = pd.DataFrame(Imputed_Test,columns=column_names) 
-        X__train_imputed=Imputed_Train
-        X__test_imputed = Imputed_Test
+        #Turn LL to NP ARRAY
+        X__train_imputed = np.transpose(np.array(Imputed_Train))
+        X__test_imputed  = np.transpose(np.array(Imputed_Test))
+
     
         if outcome_Type == 'binaryClass':
             RF_Model = RandomForestClassifier(random_state=0)
@@ -100,12 +158,11 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
 
 
        
-#for file_name in glob.glob('realdata/'+'*.csv'):
-for file_name in ['realdata\MAR_50_zoo.csv']:    
+for file_name in glob.glob('realdata/'+'*.csv'):
+#for file_name in ['realdata\MAR_50_zoo.csv']:    
     if file_name == 'realdata\colleges_aaup.csv':
-        categorical_features = ["State", "Type"]
+        categorical_features = ["Type"]
     elif file_name == 'realdata\colleges_usnews.csv':
-        continue
         categorical_features = ["State"]
     elif file_name == 'realdata\heart-h.csv':
         categorical_features = ["sex","chest_pain","fbs","restecg","exang","slope","thal"]
