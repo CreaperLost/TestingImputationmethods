@@ -206,7 +206,7 @@ class DAE():
                 self.optimizer.step()
                         
                 #if (i+1) % (total_batch//2) == 0:
-                   #print('Epoch [%d/%d], lter [%d/%d], Loss: %.6f'%(epoch+1, self.epochs, i+1, total_batch, cost.item()))
+                #   print('Epoch [%d/%d], lter [%d/%d], Loss: %.6f'%(epoch+1, self.epochs, i+1, total_batch, cost.item()))
                     
                 # early stopping rule 1 : MSE < 1e-06
                 if cost.item() < 1e-06 :
