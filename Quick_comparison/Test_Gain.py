@@ -62,17 +62,21 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
             tr= OrdinalEncoder(unknown_value=np.nan,handle_unknown="use_encoded_value")
             X_train = pd.DataFrame(tr.fit_transform(X_train))
             X_test = pd.DataFrame(tr.transform(X_test))
+            Imputed_Train = X_train.values
+            Imputed_Test = X_test.values
+            categorical_features = column_names
+            vmaps=dict(zip(categorical_features, ['' for i in categorical_features]))
+        else:
+            sclr = ColumnTransformer(
+                transformers=[
+                    ("std", 
+                    StandardScaler(), 
+                    [column_names.index(i) for i in column_names if i not in vmaps.keys()])],
+                    remainder = 'passthrough'
+            )
 
-        sclr = ColumnTransformer(
-            transformers=[
-                ("std", 
-                StandardScaler(), 
-                [column_names.index(i) for i in column_names if i not in vmaps.keys()])],
-                remainder = 'passthrough'
-        )
-
-        Imputed_Train=sclr.fit_transform(X_train)
-        Imputed_Test=sclr.transform(X_test)
+            Imputed_Train=sclr.fit_transform(X_train)
+            Imputed_Test=sclr.transform(X_test)
 
 
         LL_train = np.transpose(Imputed_Train).tolist()

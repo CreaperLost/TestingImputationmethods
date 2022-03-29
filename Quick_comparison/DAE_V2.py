@@ -274,7 +274,7 @@ class DAE():
 
                 # Run optimization op (backprop) and cost op (to get loss value)
                 l, y_hat = self.optimize_step(batch_x, batch_m)
-                pbar.set_description("loss at epoch {}: {:.3f}, phase 1".format(i, l))
+                #pbar.set_description("loss at epoch {}: {:.3f}, phase 1".format(i, l))
                 loss_list.append(l)
 
         imputed_data = self.decoder(self.encoder(data_train))
@@ -293,7 +293,7 @@ class DAE():
 
                 # Run optimization op (backprop) and cost op (to get loss value)
                 l, y_hat = self.optimize_step(batch_x, batch_m)
-                pbar.set_description("loss at epoch {}, phase 2: {:.3f}".format(i, l))
+                #pbar.set_description("loss at epoch {}, phase 2: {:.3f}".format(i, l))
                 loss_list.append(l)
 
         return self
@@ -437,18 +437,17 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
             Imputed_Test = X_test.values
             categorical_features = column_names
             vmaps=dict(zip(categorical_features, ['' for i in categorical_features]))
+        else:
+            sclr = ColumnTransformer(
+                transformers=[
+                    ("std", 
+                    StandardScaler(), 
+                    [column_names.index(i) for i in column_names if i not in vmaps.keys()])],
+                    remainder = 'passthrough'
+            )
 
-        sclr = ColumnTransformer(
-            transformers=[
-                ("std", 
-                StandardScaler(), 
-                [column_names.index(i) for i in column_names if i not in vmaps.keys()])],
-                remainder = 'passthrough'
-        )
-
-        Imputed_Train=sclr.fit_transform(X_train)
-        Imputed_Test=sclr.transform(X_test)
-
+            Imputed_Train=sclr.fit_transform(X_train)
+            Imputed_Test=sclr.transform(X_test)
 
 
         LL_train = np.transpose(Imputed_Train).tolist()
@@ -472,7 +471,6 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
         Imputed_Train = np.transpose(np.array(Imputed_Train))
         Imputed_Test  = np.transpose(np.array(Imputed_Test))
 
-        print(Imputed_Train)
         
         #NP ARRAY TO DF
         

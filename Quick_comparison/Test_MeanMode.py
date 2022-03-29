@@ -62,7 +62,12 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
             tr= OrdinalEncoder(unknown_value=np.nan,handle_unknown="use_encoded_value")
             X_train = pd.DataFrame(tr.fit_transform(X_train))
             X_test = pd.DataFrame(tr.transform(X_test))
+            Imputed_Train = X_train.values
+            Imputed_Test = X_test.values
+            categorical_features = column_names
+            vmaps=dict(zip(categorical_features, ['' for i in categorical_features]))
         
+
         imputer = ColumnTransformer(
             transformers=[
                 ("cat", SimpleImputer(strategy='most_frequent'), [column_names.index(i) for i in vmaps.keys()]),

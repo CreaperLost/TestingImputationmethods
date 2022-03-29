@@ -118,3 +118,10 @@ Error for realdata\MAR_50_Australian.csv : 0.7733743696373299  Time : 0:01:28.31
 Error for realdata\MAR_50_churn.csv : 0.6350205392289149  Time : 0:10:19.151828 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 1}
 Error for realdata\MAR_50_segment.csv : 0.882105562687077  Time : 0:03:45.678625 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 1}
 Error for realdata\MAR_50_spectrometer.csv : 0.7728274360233123  Time : 0:01:51.529242 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 1}
+Error for realdata\jad_primary-tumor.csv : 0.7564359905672632  Time : 0:01:19.726220 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 1}
+Error for realdata\MAR_50_Australian.csv : 0.7479044360190266  Time : 0:01:40.872356 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 1}
+Error for realdata\jad_primary-tumor.csv : 0.7604376870286145  Time : 0:00:21.007001 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\MAR_50_Australian.csv : 0.7881384046162186  Time : 0:00:19.560001 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\MAR_50_churn.csv : 0.6297527737692469  Time : 0:00:23.758569 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\MAR_50_segment.csv : 0.8904340899516929  Time : 0:00:23.816519 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}
+Error for realdata\MAR_50_spectrometer.csv : 0.734568445204099  Time : 0:01:00.578225 Params  : {'epochs': 1000, 'hint_rate': 0.9, 'alpha': 10}

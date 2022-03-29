@@ -155,9 +155,9 @@ for file_name in glob.glob('realdata/'+'*.csv'):
         categorical_features = []
     vmaps=dict(zip(categorical_features, ['' for i in categorical_features]))
 
-    for ep in [500,1000,2000]:
+    for ep in [500]:
         for theta in [7]:
             for drop in [0.5]:
-                for lr in [0.01,0.001]:
+                for lr in [0.01]:
                     error,total=loop(dataset=file_name,sep=';',na_values='?',outcome_Type='binaryClass',problem='C',vmaps=vmaps,parameter={"epochs":ep,"dropout":drop,"theta":theta,"lr":lr})
                     print('Error for ' + file_name+   ' : ' + str(error) + '  Time : ' + str(datetime.timedelta(seconds=total)) + ' Params  : ' + str({"epochs":ep,"dropout":drop,"theta":theta,"lr":lr}) )
