@@ -26,7 +26,7 @@ class Capula():
         self.new_names = names
         self.vmaps = vmaps
         self.new_vmaps = vmaps
-        self.model = GaussianCopula(verbose=1)
+        self.model = GaussianCopula(verbose=0)
 
 
         #The indexes for categorical features in feature list.
@@ -41,8 +41,12 @@ class Capula():
         #List of Lists -->> np.array with samples as rows and features as columns.
         data_x=np.transpose(np.array(X))
 
-        self.model.fit(data_x)
-
+        if len(self.numindx) >0 and len(self.catindx)>0:
+            self.model.fit(data_x,continuous=self.numindx,ordinal = self.catindx)
+        elif len(self.numindx) >0:
+            self.model.fit(data_x,continuous=self.numindx)
+        elif len(self.catindx) >0:
+            self.model.fit(data_x,ordinal=self.catindx)
         
         return self
                

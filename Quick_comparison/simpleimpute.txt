@@ -998,3 +998,11 @@ Error for realdata\MAR_50_Australian.csv : 0.7746339672869245  Time : 0:00:00.02
 Error for realdata\MAR_50_churn.csv : 0.6438749505790813  Time : 0:00:00.074001
 Error for realdata\MAR_50_segment.csv : 0.8983481651850237  Time : 0:00:00.026993
 Error for realdata\MAR_50_spectrometer.csv : 0.7897876913555182  Time : 0:00:00.048999
+Error for realdata\colleges_aaup.csv : 0.9797487067499631  Time : 0:00:00.023005
+Error for realdata\colleges_usnews.csv : 0.7383718117311867  Time : 0:00:00.027008
+Error for realdata\heart-h.csv : 0.7681178852107645  Time : 0:00:00.022000
+Error for realdata\jad_primary-tumor.csv : 0.7452807077395596  Time : 0:00:00.054002
+Error for realdata\MAR_50_Australian.csv : 0.7746339672869245  Time : 0:00:00.020003
+Error for realdata\MAR_50_churn.csv : 0.6438749505790813  Time : 0:00:00.046001
+Error for realdata\MAR_50_segment.csv : 0.8983481651850237  Time : 0:00:00.020000
+Error for realdata\MAR_50_spectrometer.csv : 0.7897876913555182  Time : 0:00:00.028998
