@@ -48,7 +48,7 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
     total = 0
     error = 0
 
-    kf = KFold(n_splits=2,shuffle=True,random_state=100)
+    kf = KFold(n_splits=5,shuffle=True,random_state=100)
     for train_index, test_index in kf.split(x):
         X_train, X_test = x.iloc[train_index], x.iloc[test_index]
         y_train, y_test = y.iloc[train_index], y[test_index]
@@ -111,7 +111,7 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
             error += roc_auc_score(y_test,preds)
         else:
             error += r2_score(y_test,preds)
-    return error/2,total
+    return error/5,total
 
 
 for file_name in glob.glob('realdata/'+'*.csv'):
@@ -143,9 +143,12 @@ for file_name in glob.glob('realdata/'+'*.csv'):
         categorical_features = ['A1','A8','A9','A11']
     elif file_name == 'realdata\jad_audiology.csv':
         categorical_features = ['age_gt_60', 'air', 'airBoneGap', 'ar_c', 'ar_u', 'bone', 'boneAbnormal', 'bser', 'history_buzzing', 'history_dizziness', 'history_fluctuating', 'history_fullness', 'history_heredity', 'history_nausea', 'history_noise', 'history_recruitment', 'history_ringing', 'history_roaring', 'history_vomiting', 'late_wave_poor', 'm_at_2k', 'm_cond_lt_1k', 'm_gt_1k', 'm_m_gt_2k', 'm_m_sn', 'm_m_sn_gt_1k', 'm_m_sn_gt_2k', 'm_m_sn_gt_500', 'm_p_sn_gt_2k', 'm_s_gt_500', 'm_s_sn', 'm_s_sn_gt_1k', 'm_s_sn_gt_2k', 'm_s_sn_gt_3k', 'm_s_sn_gt_4k', 'm_sn_2_3k', 'm_sn_gt_1k', 'm_sn_gt_2k', 'm_sn_gt_3k', 'm_sn_gt_4k', 'm_sn_gt_500', 'm_sn_gt_6k', 'm_sn_lt_1k', 'm_sn_lt_2k', 'm_sn_lt_3k', 'middle_wave_poor', 'mod_gt_4k', 'mod_mixed', 'mod_s_mixed', 'mod_s_sn_gt_500', 'mod_sn', 'mod_sn_gt_1k', 'mod_sn_gt_2k', 'mod_sn_gt_3k', 'mod_sn_gt_4k', 'mod_sn_gt_500', 'notch_4k', 'notch_at_4k', 'o_ar_c', 'o_ar_u', 's_sn_gt_1k', 's_sn_gt_2k', 's_sn_gt_4k', 'speech', 'static_normal', 'tymp', 'viith_nerve_signs', 'wave_V_delayed', 'waveform_ItoV_prolonged']
+    elif file_name == 'realdata\MAR_50_churn.csv':
+        categorical_features = ['international_plan','voice_mail_plan']
     else:
         categorical_features = []
     vmaps=dict(zip(categorical_features, ['' for i in categorical_features]))
+    print(categorical_features)
 
     for ep in [1000]:
         for hi_p in [0.9]:

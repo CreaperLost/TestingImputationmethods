@@ -7,7 +7,8 @@ import pandas as pd
 
 
 
-class KNN_Imputation():
+
+class Optimal_knn_Imputation():
 
     def __init__(self,parameters: dict, names: list, vmaps: dict) -> None:
         # System parameters
@@ -37,7 +38,7 @@ class KNN_Imputation():
         if len(col_cat) > 0:
             na_data.iloc[:,col_cat] = na_data.iloc[:,col_cat].astype('category')
         
-        self.method = iai.SingleKNNImputationLearner(knn_k=self.knn_k,treat_unknown_level_missing=True,random_seed=1).fit(na_data)
+        self.method = iai.OptKNNImputationLearner(knn_k=self.knn_k,treat_unknown_level_missing=True,show_progress=False,random_seed=1).fit(na_data)
 
         return self
                

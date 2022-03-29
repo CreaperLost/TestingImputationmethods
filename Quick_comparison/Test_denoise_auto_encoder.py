@@ -42,7 +42,7 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
     total = 0
     error = 0
     
-    kf = KFold(n_splits=2,shuffle=True,random_state=100)
+    kf = KFold(n_splits=5,shuffle=True,random_state=100)
     for train_index, test_index in kf.split(x):
         X_train, X_test = x.iloc[train_index], x.iloc[test_index]
         y_train, y_test = y.iloc[train_index], y.iloc[test_index]
@@ -54,18 +54,21 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
             tr= OrdinalEncoder(unknown_value=np.nan,handle_unknown="use_encoded_value")
             X_train = pd.DataFrame(tr.fit_transform(X_train))
             X_test = pd.DataFrame(tr.transform(X_test))
+            Imputed_Train = X_train.values
+            Imputed_Test = X_test.values
+            categorical_features = column_names
+            vmaps=dict(zip(categorical_features, ['' for i in categorical_features]))
+        else:
+            sclr = ColumnTransformer(
+                transformers=[
+                    ("std", 
+                    StandardScaler(), 
+                    [column_names.index(i) for i in column_names if i not in vmaps.keys()])],
+                    remainder = 'passthrough'
+            )
 
-        sclr = ColumnTransformer(
-            transformers=[
-                ("std", 
-                StandardScaler(), 
-                [column_names.index(i) for i in column_names if i not in vmaps.keys()])],
-                remainder = 'passthrough'
-        )
-
-        Imputed_Train=sclr.fit_transform(X_train)
-        Imputed_Test=sclr.transform(X_test)
-
+            Imputed_Train=sclr.fit_transform(X_train)
+            Imputed_Test=sclr.transform(X_test)
 
 
         LL_train = np.transpose(Imputed_Train).tolist()
@@ -108,7 +111,7 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
             error += roc_auc_score(y_test,preds)
         else:
             error += r2_score(y_test,preds)
-    return error/2,total
+    return error/5,total
 
 
 
@@ -146,13 +149,15 @@ for file_name in glob.glob('realdata/'+'*.csv'):
         categorical_features = ['A1','A8','A9','A11']
     elif file_name == 'realdata\jad_audiology.csv':
         categorical_features = ['age_gt_60', 'air', 'airBoneGap', 'ar_c', 'ar_u', 'bone', 'boneAbnormal', 'bser', 'history_buzzing', 'history_dizziness', 'history_fluctuating', 'history_fullness', 'history_heredity', 'history_nausea', 'history_noise', 'history_recruitment', 'history_ringing', 'history_roaring', 'history_vomiting', 'late_wave_poor', 'm_at_2k', 'm_cond_lt_1k', 'm_gt_1k', 'm_m_gt_2k', 'm_m_sn', 'm_m_sn_gt_1k', 'm_m_sn_gt_2k', 'm_m_sn_gt_500', 'm_p_sn_gt_2k', 'm_s_gt_500', 'm_s_sn', 'm_s_sn_gt_1k', 'm_s_sn_gt_2k', 'm_s_sn_gt_3k', 'm_s_sn_gt_4k', 'm_sn_2_3k', 'm_sn_gt_1k', 'm_sn_gt_2k', 'm_sn_gt_3k', 'm_sn_gt_4k', 'm_sn_gt_500', 'm_sn_gt_6k', 'm_sn_lt_1k', 'm_sn_lt_2k', 'm_sn_lt_3k', 'middle_wave_poor', 'mod_gt_4k', 'mod_mixed', 'mod_s_mixed', 'mod_s_sn_gt_500', 'mod_sn', 'mod_sn_gt_1k', 'mod_sn_gt_2k', 'mod_sn_gt_3k', 'mod_sn_gt_4k', 'mod_sn_gt_500', 'notch_4k', 'notch_at_4k', 'o_ar_c', 'o_ar_u', 's_sn_gt_1k', 's_sn_gt_2k', 's_sn_gt_4k', 'speech', 'static_normal', 'tymp', 'viith_nerve_signs', 'wave_V_delayed', 'waveform_ItoV_prolonged']
+    elif file_name == 'realdata\MAR_50_churn.csv':
+        categorical_features = ['international_plan','voice_mail_plan']
     else:
         categorical_features = []
     vmaps=dict(zip(categorical_features, ['' for i in categorical_features]))
 
-    for ep in [500]:
+    for ep in [500,1000,2000]:
         for theta in [7]:
-            for drop in [0.25]:
-                for lr in [0.01]:
+            for drop in [0.5]:
+                for lr in [0.01,0.001]:
                     error,total=loop(dataset=file_name,sep=';',na_values='?',outcome_Type='binaryClass',problem='C',vmaps=vmaps,parameter={"epochs":ep,"dropout":drop,"theta":theta,"lr":lr})
-                    print('Error for ' + file_name+   ' : ' + str(error) + '  Time : ' + str(datetime.timedelta(seconds=total)) + ' Params  : ' + str({"epochs":ep,"dropout":drop,"theta":theta}) )
+                    print('Error for ' + file_name+   ' : ' + str(error) + '  Time : ' + str(datetime.timedelta(seconds=total)) + ' Params  : ' + str({"epochs":ep,"dropout":drop,"theta":theta,"lr":lr}) )

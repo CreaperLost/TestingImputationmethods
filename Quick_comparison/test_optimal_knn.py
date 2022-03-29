@@ -18,63 +18,7 @@ import datetime
 import glob
 import pandas as pd
 from sklearn.compose import ColumnTransformer
-
-
-
-
-
-
-class Optimal_SVM_Imputation():
-
-    def __init__(self,parameters: dict, names: list, vmaps: dict) -> None:
-        # System parameters
-        self.gamma = parameters.get('gamma','auto')
-
-        self.names = names
-        self.new_names = names
-        self.vmaps = vmaps
-        self.new_vmaps = vmaps
-
-        self.model =  None
-        #The indexes for categorical features in feature list.
-        self.catindx = [names.index(i) for i in vmaps.keys()]
-        self.numindx = [names.index(i) for i in names if i not in vmaps.keys()]
-        self.cat_names = [i for i in vmaps.keys()]
-        self.num_names = [i for i in names if i not in vmaps.keys()]
-  
-
-    def fit(self,X):
-        #Code by George Paterakis
-        #List of Lists -->> np.array with samples as rows and features as columns.
-        missing_data=np.transpose(np.array(X))
-
-        na_data=pd.DataFrame(missing_data,columns=self.names)
-
-        col_cat = self.catindx
-        if len(col_cat) > 0:
-            na_data.iloc[:,col_cat] = na_data.iloc[:,col_cat].astype('category')
-        
-        self.method = iai.OptSVMImputationLearner(svm_gamma=self.gamma,treat_unknown_level_missing=True,show_progress=False,random_seed=1).fit(na_data)
-
-        return self
-               
-    def transform(self,X):
-        #Code by George Paterakis
-        #List of Lists -->> np.array with samples as rows and features as columns.
-        data_x=np.transpose(np.array(X))
-
-        na_data=pd.DataFrame(data_x,columns=self.names)
-
-        col_cat = self.catindx
-        if len(col_cat) > 0:
-            na_data.iloc[:,col_cat] = na_data.iloc[:,col_cat].astype('category')
-
-        imputed_data=self.method.transform(na_data)
-
-        imputed_data = np.transpose(np.array(imputed_data)).tolist()
-
-        return imputed_data,self.names,self.vmaps
-
+from optimal_knn import Optimal_knn_Imputation
 
 
 def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vmaps={},parameter={}):
@@ -115,10 +59,8 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
 
         start = time.time()
         
-        imputer = Optimal_SVM_Imputation(parameters=parameter,vmaps=vmaps,names=column_names)
-        
-        import pickle
-        
+        imputer = Optimal_knn_Imputation(parameters=parameter,vmaps=vmaps,names=column_names)
+                
         
         """
         col_cat = [i for i in vmaps.keys()]
@@ -164,11 +106,10 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
        
 for file_name in glob.glob('realdata/'+'*.csv'):
 #for file_name in ['realdata\MAR_50_zoo.csv']:    
+    print(file_name)
     if file_name == 'realdata\colleges_aaup.csv':
-        continue
-        categorical_features = ["Type"]
+        categorical_features = ["State", "Type"]
     elif file_name == 'realdata\colleges_usnews.csv':
-        continue
         categorical_features = ["State"]
     elif file_name == 'realdata\heart-h.csv':
         categorical_features = ["sex","chest_pain","fbs","restecg","exang","slope","thal"]
@@ -180,15 +121,24 @@ for file_name in glob.glob('realdata/'+'*.csv'):
         categorical_features = ['target','sex']
     elif file_name == 'realdata\pbcseq2.csv':
         categorical_features = ['status','drug','sex','presence_of_asictes','presence_of_hepatomegaly','presence_of_spiders']
-    elif file_name == 'realdata\lymphoma_2classes.csv':
-        continue
     elif file_name == 'realdata\MAR_50_zoo.csv':
         categorical_features = ['hair','feathers','eggs','milk','airborne','aquatic','predator','toothed','backbone','breathes','venomous','fins','tail','domestic','catsize']
+    elif file_name == 'realdata\MAR_10_molecular-biology_promoters.csv':
+        categorical_features = ['p-50', 'p-49', 'p-48', 'p-47', 'p-46', 'p-45', 'p-44', 'p-43', 'p-42', 'p-41', 'p-40', 'p-39', 'p-38', 'p-37', 'p-36', 'p-35', 'p-34', 'p-33', 'p-32', 'p-31', 'p-30', 'p-29', 'p-28', 'p-27', 'p-26', 'p-25', 'p-24', 'p-23', 'p-22', 'p-21', 'p-20', 'p-19', 'p-18', 'p-17', 'p-16', 'p-15', 'p-14', 'p-13', 'p-12', 'p-11', 'p-10', 'p-9', 'p-8', 'p-7', 'p-6', 'p-5', 'p-4', 'p-3', 'p-2', 'p-1', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7']
+    elif file_name == 'realdata\MAR_50_churn.csv':
+        categorical_features = ['international_plan','voice_mail_plan']
+    elif file_name == 'realdata\MAR_50_boston.csv':
+        categorical_features = ['CHAS']
+    elif file_name == 'realdata\MAR_50_Australian.csv':
+        categorical_features = ['A1','A8','A9','A11']
+    elif file_name == 'realdata\jad_audiology.csv':
+        categorical_features = ['age_gt_60', 'air', 'airBoneGap', 'ar_c', 'ar_u', 'bone', 'boneAbnormal', 'bser', 'history_buzzing', 'history_dizziness', 'history_fluctuating', 'history_fullness', 'history_heredity', 'history_nausea', 'history_noise', 'history_recruitment', 'history_ringing', 'history_roaring', 'history_vomiting', 'late_wave_poor', 'm_at_2k', 'm_cond_lt_1k', 'm_gt_1k', 'm_m_gt_2k', 'm_m_sn', 'm_m_sn_gt_1k', 'm_m_sn_gt_2k', 'm_m_sn_gt_500', 'm_p_sn_gt_2k', 'm_s_gt_500', 'm_s_sn', 'm_s_sn_gt_1k', 'm_s_sn_gt_2k', 'm_s_sn_gt_3k', 'm_s_sn_gt_4k', 'm_sn_2_3k', 'm_sn_gt_1k', 'm_sn_gt_2k', 'm_sn_gt_3k', 'm_sn_gt_4k', 'm_sn_gt_500', 'm_sn_gt_6k', 'm_sn_lt_1k', 'm_sn_lt_2k', 'm_sn_lt_3k', 'middle_wave_poor', 'mod_gt_4k', 'mod_mixed', 'mod_s_mixed', 'mod_s_sn_gt_500', 'mod_sn', 'mod_sn_gt_1k', 'mod_sn_gt_2k', 'mod_sn_gt_3k', 'mod_sn_gt_4k', 'mod_sn_gt_500', 'notch_4k', 'notch_at_4k', 'o_ar_c', 'o_ar_u', 's_sn_gt_1k', 's_sn_gt_2k', 's_sn_gt_4k', 'speech', 'static_normal', 'tymp', 'viith_nerve_signs', 'wave_V_delayed', 'waveform_ItoV_prolonged']
     else:
         categorical_features = []
     vmaps=dict(zip(categorical_features, ['' for i in categorical_features]))
 
-    error,total=loop(dataset=file_name,sep=';',na_values='?',outcome_Type='binaryClass',problem='C',vmaps=vmaps,parameter={"C":'auto'})
-    print('Error for ' + file_name+   ' : ' + str(error) + '  Time : ' + str(datetime.timedelta(seconds=total)) )
-    with open('simpleimpute.txt', 'a') as the_file:
-        the_file.write('Error for ' + file_name+   ' : ' + str(error) + '  Time : ' + str(datetime.timedelta(seconds=total)) +  '\n' )
+    for k in [5,10,15]:
+        error,total=loop(dataset=file_name,sep=';',na_values='?',outcome_Type='binaryClass',problem='C',vmaps=vmaps,parameter={"knn_k":k})
+        print('Error for ' + file_name+   ' : ' + str(error) + '  Time : ' + str(datetime.timedelta(seconds=total)) )
+        with open('simpleimpute.txt', 'a') as the_file:
+            the_file.write('Error for ' + file_name+   ' : ' + str(error) + '  Time : ' + str(datetime.timedelta(seconds=total)) +  '\n' )

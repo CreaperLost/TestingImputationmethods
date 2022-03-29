@@ -183,10 +183,10 @@ class Gain():
             optimizer_G.step()    
                 
             #%% Intermediate Losses
-            if it % 1000 == 0:
-                print('Iter: {}'.format(it),end='\t')
-                print('Train_loss: {:.4}'.format(np.sqrt(MSE_train_loss_curr.item())),end='\t')
-                print('Test_loss: {:.4}'.format(np.sqrt(MSE_test_loss_curr.item())))
+            #if it % 1000 == 0:
+            #    print('Iter: {}'.format(it),end='\t')
+            #    print('Train_loss: {:.4}'.format(np.sqrt(MSE_train_loss_curr.item())),end='\t')
+            #    print('Test_loss: {:.4}'.format(np.sqrt(MSE_test_loss_curr.item())))
         return self
                
     def transform(self,X):
