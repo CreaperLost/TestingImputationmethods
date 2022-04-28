@@ -75,7 +75,6 @@ class DAE():
     def _initial_imputation(self, X):
         
         
-
         X_filled = X.copy()
 
         #Code by George Paterakis
@@ -203,7 +202,7 @@ class DAE():
         data_m = 1-np.isnan(data_x)
         self.all_levels = [np.unique(x)[~np.isnan(np.unique(x))] for x in data_x[:, self.catindx].T]
 
-
+ 
         data_train = np.array([])
         data_train_m = np.array([])
         ## encode cat
@@ -463,7 +462,7 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
         #Transform returns List of List, New_Columns , New_Vmaps 
         Imputed_Train,Train_Column_names,Train_VMaps=Methods_Impute.transform(LL_train)
         Imputed_Test,Test_Column_names,Test_VMaps= Methods_Impute.transform(LL_test)
-
+        print(Imputed_Train)
 
 
         total = total + time.time()-start
@@ -471,10 +470,11 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
         Imputed_Train = np.transpose(np.array(Imputed_Train))
         Imputed_Test  = np.transpose(np.array(Imputed_Test))
 
-        
+            
         #NP ARRAY TO DF
         
         X__train_imputed = pd.DataFrame(Imputed_Train,columns=column_names) 
+        print(X__train_imputed)
         X__test_imputed = pd.DataFrame(Imputed_Test,columns=column_names) 
 
 
@@ -498,8 +498,8 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
 
 
 
-
-for file_name in glob.glob('realdata/'+'*.csv'):
+for file_name in ['realdata/water-treatment.csv']:
+#for file_name in glob.glob('realdata/'+'*.csv'):
 #for file_name in ['realdata/MAR_50_zoo.csv']:
 #for file_name in ['realdata\\lymphoma_2classes.csv','realdata\\NewFuelCar.csv']: 
     print(file_name)

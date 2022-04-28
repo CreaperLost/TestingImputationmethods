@@ -151,8 +151,10 @@ class DAE():
         #List of Lists -->> np.array with samples as rows and features as columns.
         X=np.transpose(np.array(X))
 
-        X_r = self._initial_imputation(X)
+        data_m = 1-np.isnan(X)
 
+        X_r = self._initial_imputation(X)
+        
         #if numericals
         if len(self.numindx) >0 :
             X_num  = X_r[:,self.numindx]
@@ -233,7 +235,6 @@ class DAE():
         elif len(self.catindx) >0:
             filled_data_train=self.onehot.inverse_transform(filled_data_train)
             
-        
 
         X=np.transpose(np.array(filled_data_train)).tolist()
 
@@ -262,6 +263,8 @@ class DAE():
         #Code by George Paterakis
         #List of Lists -->> np.array with samples as rows and features as columns.
         X=np.transpose(np.array(X))
+
+        data_m = 1-np.isnan(X)
 
         X_filled = self._initial_imputation(X)
 

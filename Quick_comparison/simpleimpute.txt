@@ -1006,3 +1006,7 @@ Error for realdata\MAR_50_Australian.csv : 0.7746339672869245  Time : 0:00:00.02
 Error for realdata\MAR_50_churn.csv : 0.6438749505790813  Time : 0:00:00.046001
 Error for realdata\MAR_50_segment.csv : 0.8983481651850237  Time : 0:00:00.020000
 Error for realdata\MAR_50_spectrometer.csv : 0.7897876913555182  Time : 0:00:00.028998
+Error for realdata/jad_primary-tumor.csv : 0.7452807077395596  Time : 0:00:00.034984
+Error for realdata/jad_water-treatment.csv : 0.8739410829922504  Time : 0:00:00.031920
+Error for real_50/50-Train-jad_water-treatment.csv : 0.7614288924197924  Time : 0:00:00.030101
+Error for realdata/jad_water-treatment.csv : 0.8739410829922504  Time : 0:00:00.027852
