@@ -52,23 +52,35 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
         X_train, X_test = x.iloc[train_index], x.iloc[test_index]
         y_train, y_test = y.iloc[train_index], y[test_index]
 
-        sclr = StandardScaler().fit(X_train)
 
         column_names = list(X_train.columns)
 
         start = time.time()
         
         imputer = KNN_Imputation(parameters=parameter,vmaps=vmaps,names=column_names)
-        
-        
-        """
-        col_cat = [i for i in vmaps.keys()]
-        if len(col_cat) > 0:
-            X_train[col_cat] = X_train[col_cat].astype('category')
-            X_test[col_cat] = X_test[col_cat].astype('category')
-        """
-        LL_train = np.transpose(X_train.values).tolist()
-        LL_test  = np.transpose(X_test.values).tolist()
+        if dataset == 'realdata\jad_audiology.csv' or dataset == 'realdata\MAR_10_molecular-biology_promoters.csv' or dataset == 'realdata\jad_primary-tumor.csv':
+            tr= OrdinalEncoder(unknown_value=np.nan,handle_unknown="use_encoded_value")
+            X_train = pd.DataFrame(tr.fit_transform(X_train))
+            X_test = pd.DataFrame(tr.transform(X_test))
+            Imputed_Train = X_train.values
+            Imputed_Test = X_test.values
+            categorical_features = column_names
+            vmaps=dict(zip(categorical_features, ['' for i in categorical_features]))
+        else:
+            sclr = ColumnTransformer(
+                transformers=[
+                    ("std", 
+                    StandardScaler(), 
+                    [column_names.index(i) for i in column_names if i not in vmaps.keys()])],
+                    remainder = 'passthrough'
+            )
+
+            Imputed_Train=sclr.fit_transform(X_train)
+            Imputed_Test=sclr.transform(X_test)
+
+
+        LL_train = np.transpose(Imputed_Train).tolist()
+        LL_test  = np.transpose(Imputed_Test).tolist()
 
         Methods_Impute = imputer.fit(LL_train)
         
@@ -103,6 +115,8 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
 
        
 for file_name in glob.glob('realdata/'+'*.csv'):
+#for file_name in ['realdata/MAR_50_zoo.csv']:
+#for file_name in ['realdata\\lymphoma_2classes.csv','realdata\\NewFuelCar.csv']: 
     print(file_name)
     if file_name == 'realdata\colleges_aaup.csv':
         categorical_features = ["State", "Type"]
@@ -130,6 +144,8 @@ for file_name in glob.glob('realdata/'+'*.csv'):
         categorical_features = ['A1','A8','A9','A11']
     elif file_name == 'realdata\jad_audiology.csv':
         categorical_features = ['age_gt_60', 'air', 'airBoneGap', 'ar_c', 'ar_u', 'bone', 'boneAbnormal', 'bser', 'history_buzzing', 'history_dizziness', 'history_fluctuating', 'history_fullness', 'history_heredity', 'history_nausea', 'history_noise', 'history_recruitment', 'history_ringing', 'history_roaring', 'history_vomiting', 'late_wave_poor', 'm_at_2k', 'm_cond_lt_1k', 'm_gt_1k', 'm_m_gt_2k', 'm_m_sn', 'm_m_sn_gt_1k', 'm_m_sn_gt_2k', 'm_m_sn_gt_500', 'm_p_sn_gt_2k', 'm_s_gt_500', 'm_s_sn', 'm_s_sn_gt_1k', 'm_s_sn_gt_2k', 'm_s_sn_gt_3k', 'm_s_sn_gt_4k', 'm_sn_2_3k', 'm_sn_gt_1k', 'm_sn_gt_2k', 'm_sn_gt_3k', 'm_sn_gt_4k', 'm_sn_gt_500', 'm_sn_gt_6k', 'm_sn_lt_1k', 'm_sn_lt_2k', 'm_sn_lt_3k', 'middle_wave_poor', 'mod_gt_4k', 'mod_mixed', 'mod_s_mixed', 'mod_s_sn_gt_500', 'mod_sn', 'mod_sn_gt_1k', 'mod_sn_gt_2k', 'mod_sn_gt_3k', 'mod_sn_gt_4k', 'mod_sn_gt_500', 'notch_4k', 'notch_at_4k', 'o_ar_c', 'o_ar_u', 's_sn_gt_1k', 's_sn_gt_2k', 's_sn_gt_4k', 'speech', 'static_normal', 'tymp', 'viith_nerve_signs', 'wave_V_delayed', 'waveform_ItoV_prolonged']
+    elif file_name == 'realdata\MAR_50_churn.csv':
+        categorical_features = ['international_plan','voice_mail_plan']
     else:
         categorical_features = []
     vmaps=dict(zip(categorical_features, ['' for i in categorical_features]))
