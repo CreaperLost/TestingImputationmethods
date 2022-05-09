@@ -10,6 +10,7 @@ from sklearn.metrics import mean_squared_error,r2_score
 from sklearn.metrics import accuracy_score,roc_auc_score
 import sklearn
 from dae import DAE
+#from dae_mix_encoding import DAE
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import OrdinalEncoder,LabelEncoder,LabelBinarizer
 import glob
@@ -17,7 +18,7 @@ import datetime
 from sklearn.compose import ColumnTransformer
 from meanmode import mm
 
-
+pd.set_option('display.max_columns', None)
 def dataset_cat_flag(file_name):
 
     categorical_features = []
@@ -53,6 +54,8 @@ def dataset_cat_flag(file_name):
         categorical_features = ['age_gt_60', 'air', 'airBoneGap', 'ar_c', 'ar_u', 'bone', 'boneAbnormal', 'bser', 'history_buzzing', 'history_dizziness', 'history_fluctuating', 'history_fullness', 'history_heredity', 'history_nausea', 'history_noise', 'history_recruitment', 'history_ringing', 'history_roaring', 'history_vomiting', 'late_wave_poor', 'm_at_2k', 'm_cond_lt_1k', 'm_gt_1k', 'm_m_gt_2k', 'm_m_sn', 'm_m_sn_gt_1k', 'm_m_sn_gt_2k', 'm_m_sn_gt_500', 'm_p_sn_gt_2k', 'm_s_gt_500', 'm_s_sn', 'm_s_sn_gt_1k', 'm_s_sn_gt_2k', 'm_s_sn_gt_3k', 'm_s_sn_gt_4k', 'm_sn_2_3k', 'm_sn_gt_1k', 'm_sn_gt_2k', 'm_sn_gt_3k', 'm_sn_gt_4k', 'm_sn_gt_500', 'm_sn_gt_6k', 'm_sn_lt_1k', 'm_sn_lt_2k', 'm_sn_lt_3k', 'middle_wave_poor', 'mod_gt_4k', 'mod_mixed', 'mod_s_mixed', 'mod_s_sn_gt_500', 'mod_sn', 'mod_sn_gt_1k', 'mod_sn_gt_2k', 'mod_sn_gt_3k', 'mod_sn_gt_4k', 'mod_sn_gt_500', 'notch_4k', 'notch_at_4k', 'o_ar_c', 'o_ar_u', 's_sn_gt_1k', 's_sn_gt_2k', 's_sn_gt_4k', 'speech', 'static_normal', 'tymp', 'viith_nerve_signs', 'wave_V_delayed', 'waveform_ItoV_prolonged']
     elif file_name == 'realdata\MAR_50_churn.csv':
         categorical_features = ['international_plan','voice_mail_plan']
+    elif file_name == 'real_50/50-Train-jad_soybean.csv':
+        flag = 1 
     else:
         categorical_features = []
     
@@ -145,7 +148,10 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
         X__train_imputed = pd.DataFrame(Imputed_Train,columns=column_names) 
         #print(X__train_imputed)
         X__test_imputed = pd.DataFrame(Imputed_Test,columns=column_names) 
+        print(X__train_imputed.describe())
+        print(X__test_imputed.describe())
 
+        
 
         if outcome_Type == 'binaryClass':
             RF_Model = RandomForestClassifier(random_state=0)
@@ -194,7 +200,11 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
         #print(pd.DataFrame(Imputed_Train).head(5))
         
         #NP ARRAY TO DF
-        Imputed_X_ready = pd.DataFrame(Imputed_X,columns=column_names) 
+        
+        Imputed_X_ready = pd.DataFrame(Imputed_X,columns=column_names)
+        # See the inner working of the imputed training set.
+        print(Imputed_X_ready.describe())
+
         RF_Trained = RF_Model.fit(Imputed_X_ready,y)
 
 
@@ -210,6 +220,7 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
         Imputed_Holdout,Test_Column_names,Test_VMaps= Methods_Impute.transform(LL_Holdout)
         Imputed_Holdout  = np.transpose(np.array(Imputed_Holdout))        
         Imputed_Holdout = pd.DataFrame(Imputed_Holdout,columns=column_names) 
+        print(Imputed_Holdout.describe())
         preds_holdout=RF_Trained.predict(Imputed_Holdout)
         #print(preds_holdout)
         print('Holdout AUC is : ',roc_auc_score(out,preds_holdout))
@@ -220,8 +231,8 @@ def loop(dataset,sep=',',na_values='?',outcome_Type='binaryClass',problem='C',vm
 for file_name in [
     #('real_50/50-Train-jad_primary-tumor.csv','real_50/50-Test-Features-jad_primary-tumor.csv','real_50/50-Test-Label-jad_primary-tumor.csv'),
     #('real_50/50-Train-jad_water-treatment.csv','real_50/50-Test-Features-jad_water-treatment.csv','real_50/50-Test-Label-jad_water-treatment.csv'),
-    ('real_50/50-Train-jad_schizo.csv','real_50/50-Test-Features-jad_schizo.csv','real_50/50-Test-Label-jad_schizo.csv')
-
+    #('real_50/50-Train-jad_schizo.csv','real_50/50-Test-Features-jad_schizo.csv','real_50/50-Test-Label-jad_schizo.csv')
+    ('real_50/50-Train-jad_soybean.csv','real_50/50-Test-Features-jad_soybean.csv','real_50/50-Test-Label-jad_soybean.csv')
     ]:
 #for file_name in ['realdata2/50-Train-jad_primary-tumor.csv']:
 #for file_name in ['realdata/jad_primary-tumor.csv']:
