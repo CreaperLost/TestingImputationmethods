@@ -25,10 +25,10 @@ class mm():
 
 
         #The indexes for categorical features in feature list.
-        self.catindx = [names.index(i) for i in vmaps.keys()]
-        self.numindx = [names.index(i) for i in names if i not in vmaps.keys()]
-        self.cat_names = [i for i in vmaps.keys()]
-        self.num_names = [i for i in names if i not in vmaps.keys()]
+        self.catindx = sorted([names.index(i) for i in vmaps.keys()])
+        self.numindx = sorted([names.index(i) for i in names if i not in vmaps.keys()])
+        self.cat_names = [self.names[i] for i in self.catindx]
+        self.num_names = [self.names[i] for i in self.numindx]
         self.missing_values = missing_values
 
 
@@ -46,7 +46,7 @@ class mm():
         if len(self.numindx) >0 :
             if self.initial_imputer_Mean is None:
                 self.initial_imputer_Mean = SimpleImputer(missing_values=self.missing_values,strategy='mean')
-                X_filled[:,self.numindx] = self.initial_imputer_Mean.fit_transform(X[:,self.numindx])
+                self.initial_imputer_Mean.fit(X[:,self.numindx])
             else:
                 X_filled[:,self.numindx] = self.initial_imputer_Mean.transform(X[:,self.numindx])
            
@@ -55,7 +55,7 @@ class mm():
         if len(self.catindx) >0 :
             if self.initial_imputer_Mode is None:
                 self.initial_imputer_Mode = SimpleImputer(missing_values=self.missing_values,strategy='most_frequent')
-                X_filled[:,self.catindx] = self.initial_imputer_Mode.fit_transform(X[:,self.catindx])
+                self.initial_imputer_Mode.fit(X[:,self.catindx])
             else:
                 X_filled[:,self.catindx] = self.initial_imputer_Mode.transform(X[:,self.catindx])
             
